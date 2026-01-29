@@ -1,9 +1,11 @@
 import os
 import sys
 import tempfile
+import re
 from pathlib import Path
 from reportlab.pdfgen import canvas
 
+import pytest
 from pypdf import PdfReader
 
 # Ensure project root is on sys.path so pytest can import pdf_splitter
@@ -48,3 +50,32 @@ def test_extract_matches_and_split(tmp_path):
     os.remove(pdf_path)
     for f in output_files:
         os.remove(f)
+
+
+def test_sn_pattern_valid_regex():
+    """Test that valid regex patterns compile without error"""
+    valid_patterns = [
+        r"\b\d{4}-\d{5}\b",  # default pattern
+        r"\d{4}-\d{5}",
+        r"[0-9]{4}-[0-9]{5}",
+        r".*",
+    ]
+    for pattern in valid_patterns:
+        try:
+            compiled = re.compile(pattern)
+            assert compiled is not None
+        except re.error:
+            pytest.fail(f"Valid pattern '{pattern}' raised re.error")
+
+
+def test_sn_pattern_invalid_regex():
+    """Test that invalid regex patterns raise re.error"""
+    invalid_patterns = [
+        r"(unclosed",  # unclosed group
+        r"[unclosed",  # unclosed bracket
+        r"(?P<invalid>unclosed",  # unclosed named group
+        r"*invalid",  # nothing to repeat
+    ]
+    for pattern in invalid_patterns:
+        with pytest.raises(re.error):
+            re.compile(pattern)

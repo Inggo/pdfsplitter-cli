@@ -177,8 +177,17 @@ def main():
     args = parser.parse_args()
 
     # Allow overriding the patterns via CLI while keeping current defaults
-    SN_PATTERN = re.compile(args.sn_pattern)
-    OVERVIEW_PATTERN = re.compile(args.overview_pattern, re.DOTALL)
+    try:
+        SN_PATTERN = re.compile(args.sn_pattern)
+    except re.error as e:
+        send(f"Error: Invalid regex pattern for --sn-pattern: {e}")
+        sys.exit(1)
+
+    try:
+        OVERVIEW_PATTERN = re.compile(args.overview_pattern, re.DOTALL)
+    except re.error as e:
+        send(f"Error: Invalid regex pattern for --overview-pattern: {e}")
+        sys.exit(1)
 
     input_pdf = args.input
     output_dir = args.output_dir
