@@ -1,25 +1,25 @@
-PDF Splitter (Python)
+# PDF Splitter (Python)
 
 This is a standalone PDF splitter based on patterns.
 
-Requirements
+## Requirements
 
 - Python 3.8+
 - pypdf
 - rclone (optional, if you want uploads/links)
 
-Install
+## Usage
 
-pip install pypdf
-
-Usage
-
+```
 python3 pdf_splitter.py --input path/to/input.pdf --output-dir var/output --as csv
+```
 
 To upload outputs via rclone and get links:
 
+```
 python3 pdf_splitter.py --input path/to/input.pdf --output-dir var/output --as csv --rclone remote:folder
+```
 
-Notes
+__Notes__
 
-- The script looks for student numbers matching the pattern YYYY-NNNNN and an "overview" text block by default.
+- The script looks for the pattern YYYY-NNNNN and an "overview" text block by default.
