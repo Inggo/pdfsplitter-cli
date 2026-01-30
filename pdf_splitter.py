@@ -197,12 +197,6 @@ def main():
     matches = extract_matches(input_pdf)
     output_files = split_pdf(input_pdf, output_dir, matches)
 
-    if args.rclone:
-        send('Uploading output files via rclone')
-        uploaded = upload_files(output_files, args.rclone)
-    else:
-        uploaded = output_files
-
     if args.as_type == 'zip':
         send('Preparing Zip File')
         zip_path = create_zip(output_files, output_dir)
@@ -213,6 +207,12 @@ def main():
             link = run_command(['rclone', 'link', f"{args.rclone.rstrip('/')}/{os.path.basename(zip_path)}"])
             send(f'Zip downloadable at: {link}')
     else:
+        if args.rclone:
+            send('Uploading output files via rclone')
+            uploaded = upload_files(output_files, args.rclone)
+        else:
+            uploaded = output_files
+
         csv_path = create_csv(uploaded, matches['student_numbers'], matches['names'])
         if args.rclone:
             run_command(['rclone', 'copy', csv_path, args.rclone])
